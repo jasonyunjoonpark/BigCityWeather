@@ -17,7 +17,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
     @IBOutlet weak var conditionLabel: UILabel!
     @IBOutlet weak var imgView: UIImageView!
     
-    var degree: Int!
+    var degree: Double!
     var condition: String!
     var imageUrl: String!
     var city: String!
@@ -52,7 +52,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
                 }
                 
                 if let current = json["current"] as? [String : AnyObject] {
-                    if let temp = current["temp_c"] as? Int {
+                    if let temp = current["temp_f"] as? Double {
                         self.degree = temp
                     }
                     if let condition = current["condition"] as? [String : AnyObject] {
@@ -60,7 +60,7 @@ class ViewController: UIViewController, UISearchBarDelegate {
                             self.condition = text
                         }
                         if let icon = condition["icon"] as? String {
-                            self.imageUrl = icon
+                            self.imageUrl = "https:\(icon)"
                         }
                     }
                 }
@@ -71,12 +71,18 @@ class ViewController: UIViewController, UISearchBarDelegate {
                 
                 DispatchQueue.main.async {
                     if self.exists {
-                        self.degreeLabel.text = self.degree.description
+                        self.degreeLabel.isHidden = false
+                        self.conditionLabel.isHidden = false
+                        self.imgView.isHidden = false
+                        
+                        self.degreeLabel.text = "\(self.degree.description)°"
                         self.cityLabel.text = self.city
                         self.conditionLabel.text = self.condition
+                        self.imgView.downloadImage(from: self.imageUrl!)
                     } else {
                         self.degreeLabel.isHidden = true
                         self.conditionLabel.isHidden = true
+                        self.imgView.isHidden = true
                         self.cityLabel.text = "No matching city found"
                         self.exists = true
                     }
